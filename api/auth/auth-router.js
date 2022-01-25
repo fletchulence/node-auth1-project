@@ -44,7 +44,7 @@ async (req, res, next)=>{
     const newUser = {username, password}
     const addedUser = await User.add( newUser )
     // console.log(allUsers)
-    res.json({ message: `welcome ${addedUser.username}`} )
+    res.json( addedUser )
   } catch(err){
     next(err)
   }
@@ -65,7 +65,15 @@ async (req, res, next)=>{
     "message": "Invalid credentials"
   }
  */
-
+router.post('/login', 
+  checkUsernameExists, 
+async (req, res, next)=>{
+  try{
+    res.json({ message: `Welcome ${req.user.username}!` })
+  } catch(err){
+    next(err)
+  }
+})
 
 /**
   3 [GET] /api/auth/logout
