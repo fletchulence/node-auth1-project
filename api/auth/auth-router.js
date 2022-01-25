@@ -42,8 +42,8 @@ async (req, res, next)=>{
     const { username, password } = req.body
     // HASHING
     const hash = bcrypt.hashSync(password, 8)
-
     const newUser = {username, password: hash}
+
     const addedUser = await User.add( newUser )
     // console.log(allUsers)
     res.json( addedUser )
@@ -71,11 +71,19 @@ router.post('/login',
   checkUsernameExists, 
 async (req, res, next)=>{
   try{
-    if(req.user.password === req.body.password){
-      res.json({ message: `Welcome ${req.user.username}` })
+    const {username, password} = req.body
+    const [user] = await User.findBy({ username })
+
+    if (user && bcrypt.compareSync(password, user.password)) {
+      req.session.user = user
+      res.json({ message: `Welcome ${user.username}` })
     } else{
       next({ status: 401, message: 'invalid credentials'})
     }
+
+    // const user = req.session.user
+    // req.session.user = user
+    // res.json({ message: `Welcome ${user.username}` })
   } catch(err){
     next(err)
   }
@@ -96,6 +104,10 @@ async (req, res, next)=>{
     "message": "no session"
   }
  */
+
+router.get('/logout', (req, res, next)=>{
+  
+})
 
 
  

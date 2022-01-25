@@ -1,4 +1,6 @@
 const User = require('./../users/users-model')
+const bcrypt = require('bcryptjs')
+
 
 /*
   If the user does not have a session saved in the server
@@ -8,8 +10,12 @@ const User = require('./../users/users-model')
     "message": "You shall not pass!"
   }
 */
-function restricted() {
-
+function restricted(req, res, next) {
+  if(!req.session.user){
+    next({ status:401 , message: 'you chall not pass!'})
+  } else{
+    next()
+  }
 }
 
 /*
@@ -42,17 +48,23 @@ async function checkUsernameFree(req, res, next) {
     "message": "Invalid credentials"
   }
 */
+
+//! keeping the below comments to test more
 async function checkUsernameExists(req, res, next) {
-  const { username } = req.body
+  const { username, password } = req.body
   try{
     const [ existingUser ] = await User.findBy({ username })
     if( !existingUser ){
       next({ status: 401, message: 'Invalid credentials'})
+    // } else if (existingUser && bcrypt.compareSync(password, existingUser.password)) {
+    //   req.session.user = existingUser
+    //   next()
+    // } else{
+    //   next({ status: 401, message: 'invalid credentials'})
+    // }
     } else {
-      req.user = existingUser
       next()
     }
-    // res.json( existingUser )
   } catch(err){
     next(err)
   }
