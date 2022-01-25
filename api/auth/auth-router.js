@@ -2,7 +2,7 @@
 // middleware functions from `auth-middleware.js`. You will need them here!
 
 const router = require('express').Router()
-
+const bcrypt = require('bcryptjs')
 const User = require('./../users/users-model')
 
 const {
@@ -40,8 +40,10 @@ router.post('/register',
 async (req, res, next)=>{
   try{
     const { username, password } = req.body
+    // HASHING
+    const hash = bcrypt.hashSync(password, 8)
 
-    const newUser = {username, password}
+    const newUser = {username, password: hash}
     const addedUser = await User.add( newUser )
     // console.log(allUsers)
     res.json( addedUser )
@@ -69,7 +71,11 @@ router.post('/login',
   checkUsernameExists, 
 async (req, res, next)=>{
   try{
-    res.json({ message: `Welcome ${req.user.username}!` })
+    if(req.user.password === req.body.password){
+      res.json({ message: `Welcome ${req.user.username}` })
+    } else{
+      next({ status: 401, message: 'invalid credentials'})
+    }
   } catch(err){
     next(err)
   }
@@ -90,6 +96,7 @@ async (req, res, next)=>{
     "message": "no session"
   }
  */
+
 
  
 // Don't forget to add the router to the `exports` object so it can be required in other modules
