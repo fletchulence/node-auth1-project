@@ -12,7 +12,7 @@ const bcrypt = require('bcryptjs')
 */
 function restricted(req, res, next) {
   if(!req.session.user){
-    next({ status:401 , message: 'you chall not pass!'})
+    next({ status:401 , message: 'you shall not pass!'})
   } else{
     next()
   }
