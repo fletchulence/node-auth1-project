@@ -11,20 +11,6 @@ const {
   checkUsernameExists,
 } = require('./auth-middleware')
 
-router.post('/register', async (req, res, next)=>{
-  try{
-    const { username, password } = req.body
-
-    const newUser = {username, password}
-    await User.add( newUser )
-    // console.log(allUsers)
-    res.json({ message: 'welcome'} )
-  } catch(err){
-    next(err)
-  }
-})
-
-
 /**
   1 [POST] /api/auth/register { "username": "sue", "password": "1234" }
 
@@ -48,6 +34,21 @@ router.post('/register', async (req, res, next)=>{
   }
  */
 
+router.post('/register', 
+  checkUsernameFree, 
+  checkPasswordLength,
+async (req, res, next)=>{
+  try{
+    const { username, password } = req.body
+
+    const newUser = {username, password}
+    const addedUser = await User.add( newUser )
+    // console.log(allUsers)
+    res.json({ message: `welcome ${addedUser.username}`} )
+  } catch(err){
+    next(err)
+  }
+})
 
 /**
   2 [POST] /api/auth/login { "username": "sue", "password": "1234" }
