@@ -106,7 +106,18 @@ async (req, res, next)=>{
  */
 
 router.get('/logout', (req, res, next)=>{
-  
+  if(req.session.user){
+    req.session.destroy((err)=>{
+      if (err){
+        // res.set('Set-Cookie', 'chocolatechip=bar')
+        res.json({ message: 'sorry, please try again' })
+      } else{
+        res.json({ message: 'logged out'})
+      }
+    })
+  } else {
+    res.json({ message: 'no session' })
+  }
 })
 
 
