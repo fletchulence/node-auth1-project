@@ -5,9 +5,11 @@ const router = require('express').Router()
 
 const User = require('./../users/users-model')
 
-// const {
-//   restricted
-// } = require('./auth-middleware')
+const {
+  checkPasswordLength,
+  checkUsernameFree,
+  checkUsernameExists,
+} = require('./auth-middleware')
 
 router.post('/register', async (req, res, next)=>{
   try{
